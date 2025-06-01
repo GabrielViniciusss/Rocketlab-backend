@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   Controller,
   Get,
@@ -9,57 +11,63 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { AddItemToCartDto } from '../cart/dto/add-item-to-cart';
-import { UpdateCartItemQuantityDto } from '../cart/dto/update-cart-item-quantity';
+import { AddItemToCartDto } from './dto/add-item-to-cart';
+import { UpdateCartItemQuantityDto } from './dto/update-cart-item-quantity';
 import {
   ApiTags,
   ApiOperation,
   ApiResponse,
   ApiParam,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport'; // Para usar AuthGuard('jwt')
 
 @ApiTags('Cart')
-@Controller('cart')
+@ApiBearerAuth('access-token') // Aplica a necessidade de Bearer token a todos os endpoints deste controller no Swagger
+@UseGuards(AuthGuard('jwt')) // Protege todos os endpoints deste controller com a estratégia JWT
+@Controller('cart') // Rota base continua /cart
 export class CartController {
   constructor(private readonly cartService: CartService) {}
 
-  // Endpoint para obter o carrinho de um usuário específico
-  @Get(':userId')
-  @ApiOperation({ summary: "Get a user's shopping cart" })
-  @ApiParam({ name: 'userId', description: 'ID of the user', type: Number })
+  @Get()
+  @ApiOperation({ summary: "Get the authenticated user's shopping cart" })
   @ApiResponse({ status: 200, description: "Return the user's cart." })
-  @ApiResponse({
-    status: 404,
-    description: 'User not found (if cart creation depends on user existence).',
-  })
-  async getUserCart(@Param('userId', ParseIntPipe) userId: number) {
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  async getUserCart(@Request() req) {
+    const userId = req.user.userId;
     return this.cartService.getOrCreateCartByUserId(userId);
   }
 
-  @Post(':userId/items')
-  @ApiOperation({ summary: 'Add an item to the shopping cart' })
-  @ApiParam({ name: 'userId', description: 'ID of the user', type: Number })
+  @Post('items')
+  @ApiOperation({
+    summary: "Add an item to the authenticated user's shopping cart",
+  })
   @ApiBody({ type: AddItemToCartDto })
   @ApiResponse({ status: 201, description: 'Item successfully added to cart.' })
-  @ApiResponse({ status: 404, description: 'User or Product not found.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 404, description: 'Product not found.' })
   @ApiResponse({
     status: 400,
     description: 'Bad Request (e.g., validation error).',
   })
   @HttpCode(HttpStatus.CREATED)
   async addItemToCart(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Request() req,
     @Body() addItemToCartDto: AddItemToCartDto,
   ) {
+    const userId = req.user.userId;
     return this.cartService.addItem(userId, addItemToCartDto);
   }
 
-  @Patch(':userId/items/:productId')
-  @ApiOperation({ summary: 'Update quantity of an item in the cart' })
-  @ApiParam({ name: 'userId', description: 'ID of the user', type: Number })
+  @Patch('items/:productId')
+  @ApiOperation({
+    summary: "Update quantity of an item in the authenticated user's cart",
+  })
   @ApiParam({
     name: 'productId',
     description: 'ID of the product in the cart',
@@ -70,22 +78,25 @@ export class CartController {
     status: 200,
     description: 'Item quantity successfully updated.',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({
     status: 404,
-    description: 'User, Cart, or Product item not found.',
+    description: 'Cart or Product item not found.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   async updateItemQuantity(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Request() req,
     @Param('productId', ParseIntPipe) productId: number,
     @Body() updateDto: UpdateCartItemQuantityDto,
   ) {
+    const userId = req.user.userId;
     return this.cartService.updateItemQuantity(userId, productId, updateDto);
   }
 
-  @Delete(':userId/items/:productId')
-  @ApiOperation({ summary: 'Remove an item from the cart' })
-  @ApiParam({ name: 'userId', description: 'ID of the user', type: Number })
+  @Delete('items/:productId')
+  @ApiOperation({
+    summary: "Remove an item from the authenticated user's cart",
+  })
   @ApiParam({
     name: 'productId',
     description: 'ID of the product to remove from the cart',
@@ -95,29 +106,29 @@ export class CartController {
     status: 200,
     description: 'Item successfully removed from cart.',
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({
     status: 404,
-    description: 'User, Cart, or Product item not found.',
+    description: 'Cart or Product item not found.',
   })
   @HttpCode(HttpStatus.OK)
   async removeItemFromCart(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Request() req,
     @Param('productId', ParseIntPipe) productId: number,
   ) {
+    const userId = req.user.userId;
     return this.cartService.removeItem(userId, productId);
   }
 
-  @Delete(':userId')
-  @ApiOperation({ summary: "Clear all items from a user's cart" })
-  @ApiParam({
-    name: 'userId',
-    description: 'ID of the user whose cart to clear',
-    type: Number,
+  @Delete()
+  @ApiOperation({
+    summary: "Clear all items from the authenticated user's cart",
   })
   @ApiResponse({ status: 200, description: 'Cart successfully cleared.' })
-  @ApiResponse({ status: 404, description: 'User or Cart not found.' })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @HttpCode(HttpStatus.OK)
-  async clearUserCart(@Param('userId', ParseIntPipe) userId: number) {
+  async clearUserCart(@Request() req) {
+    const userId = req.user.userId;
     return this.cartService.clearCart(userId);
   }
 }
