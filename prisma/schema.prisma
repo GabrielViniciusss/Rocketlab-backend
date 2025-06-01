@@ -21,19 +21,9 @@ model Product {
   description String
   category    String
   image       String
-  rating      Rating?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   cartItems   CartItem[]
-  orderItems  OrderItem[]
-}
-
-model Rating {
-  id        Int     @id @default(autoincrement())
-  rate      Float
-  count     Int
-  productId Int     @unique
-  product   Product @relation(fields: [productId], references: [id])
 }
 
 model User {
@@ -41,7 +31,6 @@ model User {
   email     String   @unique
   name      String?
   password  String
-  orders    Order[]
   cart      Cart?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -66,28 +55,5 @@ model CartItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([cartId, productId])
-}
-
-model Order {
-  id        Int       @id @default(autoincrement())
-  userId    Int
-  user      User      @relation(fields: [userId], references: [id])
-  items     OrderItem[]
-  total     Float
-  status    String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-model OrderItem {
-  id        Int      @id @default(autoincrement())
-  orderId   Int
-  order     Order    @relation(fields: [orderId], references: [id])
-  productId Int
-  product   Product  @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  @@unique([cartId, productId]) 
 }
