@@ -1,98 +1,131 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Rocketshop Backend API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API backend para um sistema de compras online, construída com NestJS, TypeScript, Prisma e SQLite.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Funcionalidades Implementadas
 
-## Description
+* **Gerenciamento de Produtos:**
+    * CRUD completo (Criar, Ler, Atualizar, Deletar) para produtos.
+    * Campos: título, preço, descrição, categoria, imagem.
+* **Gerenciamento de Usuários:**
+    * CRUD completo para usuários.
+    * Registro de novos usuários com hashing de senha (bcrypt).
+    * Campos: email (único), nome (obrigatório), senha.
+* **Autenticação:**
+    * Login de usuários (email e senha) retornando um token JWT.
+    * Proteção de rotas usando JWT e Passport.js.
+    * Endpoint para verificar o perfil do usuário autenticado.
+* **Carrinho de Compras:**
+    * Obter/Criar carrinho para um usuário autenticado.
+    * Adicionar itens ao carrinho.
+    * Atualizar quantidade de itens no carrinho.
+    * Remover itens do carrinho.
+    * Limpar todos os itens do carrinho.
+* **Documentação da API:**
+    * Geração automática de documentação interativa com Swagger (OpenAPI) disponível em `/api-docs`.
+* **Banco de Dados:**
+    * Uso do SQLite como banco de dados.
+    * Gerenciamento de schema e migrações com Prisma.
+    * Seed para popular o banco de dados com produtos iniciais.
+* **Validação:**
+    * Validação de dados de entrada (DTOs) usando `class-validator` e `class-transformer`.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tecnologias Utilizadas
 
-## Project setup
+* **Backend:** NestJS ([https://nestjs.com/](https://nestjs.com/))
+* **Linguagem:** TypeScript ([https://www.typescriptlang.org/](https://www.typescriptlang.org/))
+* **ORM:** Prisma ([https://www.prisma.io/](https://www.prisma.io/))
+* **Banco de Dados:** SQLite
+* **Autenticação:** Passport.js ([http://www.passportjs.org/](http://www.passportjs.org/)) com estratégias JWT (JSON Web Tokens) e Local.
+* **Hashing de Senha:** bcrypt
+* **Documentação da API:** Swagger (OpenAPI) via `@nestjs/swagger`
+* **Validação:** class-validator, class-transformer
+* **Gerenciador de Pacotes:** pnpm (para instalação de dependências e scripts como `start:dev`)
 
-```bash
-$ pnpm install
-```
+## Pré-requisitos
 
-## Compile and run the project
+Antes de começar, você precisará ter instalado em sua máquina:
+* [Node.js](https://nodejs.org/) (versão recomendada: LTS, ex: 18.x, 20.x ou superior)
+* [pnpm](https://pnpm.io/installation) (para `pnpm install`, `pnpm run start:dev`, etc.)
+* [npm](https://www.npmjs.com/get-npm) (o `npx` vem com o npm, que geralmente é instalado com o Node.js)
+* [Git](https://git-scm.com/)
 
-```bash
-# development
-$ pnpm run start
+## Setup e Instalação
 
-# watch mode
-$ pnpm run start:dev
+1.  **Clone o Repositório:**
+    ```bash
+    git clone <https://github.com/GabrielViniciusss/Rocketlab-backend.git>
+    cd nome-da-pasta-do-projeto
+    ```
 
-# production mode
-$ pnpm run start:prod
-```
+2.  **Instale as Dependências:**
+    Usando pnpm:
+    ```bash
+    pnpm install
+    ```
 
-## Run tests
+3.  **Configure as Variáveis de Ambiente:**
+    Crie um arquivo chamado `.env` na raiz do projeto. Este arquivo guardará suas variáveis de ambiente e **não deve ser comitado no Git** (adicione `.env` ao seu `.gitignore`).
 
-```bash
-# unit tests
-$ pnpm run test
+    Adicione as seguintes variáveis ao seu arquivo `/.env`:
+    ```env
+    # URL de conexão com o banco de dados SQLite
+    DATABASE_URL="file:./dev.db"
 
-# e2e tests
-$ pnpm run test:e2e
+    # Secret para assinar os JSON Web Tokens (JWT)
+    # IMPORTANTE: Use uma string longa, complexa e aleatória.
+    # NÃO use um valor de exemplo fraco em produção!
+    JWT_SECRET="SEU_SEGREDO_JWT_SUPER_FORTE_E_UNICO_AQUI"
+    ```
+    *Para `JWT_SECRET`, gere uma string aleatória forte. Você pode usar um gerador de senhas online.*
+    *Certifique-se que seu arquivo `src/auth/constants.ts` está lendo `process.env.JWT_SECRET`.*
 
-# test coverage
-$ pnpm run test:cov
-```
+## Configuração do Banco de Dados
 
-## Deployment
+1.  **Execute as Migrações do Prisma:**
+    Este comando aplicará todas as migrações pendentes para criar a estrutura do banco de dados conforme definido no `prisma/schema.prisma`.
+    ```bash
+    npx prisma migrate dev
+    ```
+    Você será solicitado a dar um nome para a migração se for a primeira vez ou se houver novas mudanças no schema.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+2.  **Execute o Seed do Prisma (Opcional, mas recomendado para ter dados iniciais):**
+    Este comando executará o script `prisma/seed.ts` para popular o banco de dados com dados iniciais (ex: produtos).
+    ```bash
+    npx prisma db seed
+    ```
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Rodando a Aplicação
 
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
+1.  **Modo de Desenvolvimento (com watch mode):**
+    ```bash
+    npm run start:dev
+    ```
+    A aplicação estará disponível em `http://localhost:3000` (ou a porta configurada).
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## Documentação e Uso da API
 
-## Resources
+Para documentação interativa da API, foi usado Swagger UI que está disponível em:
 
-Check out a few resources that may come in handy when working with NestJS:
+`http://localhost:3000/api-docs`
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Através do Swagger UI, você pode visualizar todos os endpoints, seus parâmetros, DTOs de requisição/resposta e testá-los diretamente no navegador.
 
-## Support
+### Fluxo de Autenticação
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+1.  **Registro:** Use o endpoint `POST /users` para criar uma nova conta de usuário (fornecendo `email`, `name`, `password`).
+2.  **Login:** Use o endpoint `POST /auth/login` com o `email` e `password` do usuário registrado. Se as credenciais estiverem corretas, a API retornará um `access_token` (JWT).
+3.  **Acessando Rotas Protegidas:** Para acessar rotas protegidas (como as do Carrinho de Compras ou o perfil do usuário em `/auth/profile`), inclua o `access_token` no cabeçalho `Authorization` da sua requisição, prefixado com `Bearer `:
+    ```
+    Authorization: Bearer SEU_ACCESS_TOKEN_AQUI
+    ```
+    No Swagger UI, você pode usar o botão "Authorize" (geralmente no canto superior direito) para configurar o token Bearer globalmente para os testes.
 
-## Stay in touch
+### Principais Grupos de Endpoints
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+* **Auth (`/auth`):** Login, perfil do usuário autenticado.
+* **Users (`/users`):** CRUD para usuários (o registro é feito aqui).
+* **Products (`/products`):** CRUD para produtos.
+* **Cart (`/cart`):** Gerenciamento do carrinho de compras do usuário autenticado (obter carrinho, adicionar/remover/atualizar itens, limpar carrinho).
 
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
