@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaService } from '../../prisma/prisma.service';
+import { FindProductsQueryDto } from './dto/find-products-query';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProductsService {
@@ -13,8 +15,33 @@ export class ProductsService {
     });
   }
 
-  async findAll() {
-    return this.prisma.product.findMany();
+  async findAll(query?: FindProductsQueryDto) {
+    const where: Prisma.ProductWhereInput = {};
+
+    if (query?.title) {
+      where.title = {
+        contains: query.title,
+      };
+    }
+
+    if (query?.category) {
+      where.category = {
+        equals: query.category,
+      };
+    }
+
+    if (query?.maxPrice) {
+      where.price = {
+        lt: query.maxPrice,
+      };
+    }
+
+    return this.prisma.product.findMany({
+      where,
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
   async findOne(id: number) {

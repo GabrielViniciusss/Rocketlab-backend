@@ -1,6 +1,7 @@
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { FindProductsQueryDto } from './dto/find-products-query';
 import {
   Controller,
   Get,
@@ -12,6 +13,7 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 
 import {
@@ -43,10 +45,10 @@ export class ProductsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all products' })
+  @ApiOperation({ summary: 'Get all products with optional filters' })
   @ApiResponse({ status: 200, description: 'Return all products.' })
-  findAll() {
-    return this.productsService.findAll();
+  findAll(@Query() query: FindProductsQueryDto) {
+    return this.productsService.findAll(query);
   }
 
   @Get(':id')
