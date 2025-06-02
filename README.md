@@ -21,6 +21,7 @@ API backend para um sistema de compras online, construída com NestJS, TypeScrip
     * Atualizar quantidade de itens no carrinho.
     * Remover itens do carrinho.
     * Limpar todos os itens do carrinho.
+    * Finalizar compra (Checkout)
 * **Documentação da API:**
     * Geração automática de documentação interativa com Swagger (OpenAPI) disponível em `/api-docs`.
 * **Banco de Dados:**
@@ -55,7 +56,7 @@ Antes de começar, você precisará ter instalado em sua máquina:
 1.  **Clone o Repositório:**
     ```bash
     git clone <https://github.com/GabrielViniciusss/Rocketlab-backend.git>
-    cd nome-da-pasta-do-projeto
+    cd Rocketlab-backend
     ```
 
 2.  **Instale as Dependências:**
