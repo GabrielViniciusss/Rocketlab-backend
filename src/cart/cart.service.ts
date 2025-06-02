@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from 'prisma/prisma.service';
 import { ProductsService } from '../products/products.service';
 import { AddItemToCartDto } from '../cart/dto/add-item-to-cart';
@@ -39,6 +43,54 @@ export class CartService {
       });
     }
     return cart;
+  }
+
+  async getCartContents(userId: number) {
+    const cart = await this.getOrCreateCartByUserId(userId);
+
+    let total = 0;
+    if (cart.items && cart.items.length > 0) {
+      total = cart.items.reduce((acc, item) => {
+        if (item.product && typeof item.product.price === 'number') {
+          return acc + item.quantity * item.product.price;
+        }
+        return acc;
+      }, 0);
+    }
+
+    const roundedTotal = parseFloat(total.toFixed(2));
+
+    return {
+      ...cart,
+      total: roundedTotal,
+    };
+  }
+
+  async checkout(userId: number) {
+    const currentCartWithDetails = await this.getCartContents(userId);
+
+    if (
+      !currentCartWithDetails.items ||
+      currentCartWithDetails.items.length === 0
+    ) {
+      throw new BadRequestException('Cannot checkout an empty cart.');
+    }
+
+    const orderSummary = {
+      items: [...currentCartWithDetails.items],
+      total: currentCartWithDetails.total,
+      checkoutDate: new Date(),
+    };
+
+    await this.prisma.cartItem.deleteMany({
+      where: {
+        cartId: currentCartWithDetails.id,
+      },
+    });
+    return {
+      message: 'Checkout successful! Thank you for your purchase.',
+      orderSummary: orderSummary,
+    };
   }
 
   async addItem(userId: number, addItemDto: AddItemToCartDto) {

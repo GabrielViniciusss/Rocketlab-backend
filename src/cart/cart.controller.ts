@@ -40,7 +40,25 @@ export class CartController {
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   async getUserCart(@Request() req) {
     const userId = req.user.userId;
-    return this.cartService.getOrCreateCartByUserId(userId);
+    return this.cartService.getCartContents(userId);
+  }
+
+  @Post('checkout')
+  @ApiOperation({ summary: "Checkout the authenticated user's shopping cart" })
+  @ApiResponse({
+    status: 200,
+    description:
+      'Cart successfully checked out, items cleared, and order summary returned.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Bad Request (e.g., cart is empty).',
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @HttpCode(HttpStatus.OK)
+  async checkoutCart(@Request() req) {
+    const userId = req.user.userId;
+    return this.cartService.checkout(userId);
   }
 
   @Post('items')
