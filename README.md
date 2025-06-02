@@ -88,13 +88,8 @@ Antes de começar, você precisará ter instalado em sua máquina:
     ```bash
     npx prisma migrate dev
     ```
-    Você será solicitado a dar um nome para a migração se for a primeira vez ou se houver novas mudanças no schema.
-
-2.  **Execute o Seed do Prisma (Opcional, mas recomendado para ter dados iniciais):**
-    Este comando executará o script `prisma/seed.ts` para popular o banco de dados com dados iniciais (ex: produtos).
-    ```bash
-    npx prisma db seed
-    ```
+    Você será solicitado a dar um nome para a migração se for a primeira vez ou se houver novas mudanças no schema. Esse comando rodará o seed.ts que vai povoar o banco
+    de dados com alguns produtos.
 
 ## Rodando a Aplicação
 
